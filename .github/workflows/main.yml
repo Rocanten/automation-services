@@ -13,22 +13,16 @@ jobs:
         name: Checkout
         uses: actions/checkout@v2
       -
-        name: Login to Docker Hub
-        uses: docker/login-action@v1
+        name: Yandex Cloud login
+        uses: yc-actions/yc-cr-login@v1
         with:
-          username: ${{secrets.DOCKER_HUB_USERNAME}}
-          password: ${{secrets.DOCKER_HUB_ACCESS_TOKEN}}
+          yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
       -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      -
-        name: Build and push
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
-          push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/timelog:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/timelog:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/timelog:buildcache,mode=max
+        name: Build, tag, and push image to Yandex Cloud Container Registry
+        env:
+          CR_REGISTRY: crpb1rh401lft0885hun
+          CR_REPO: yc-cr-github-action
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG .
+          docker push cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG
