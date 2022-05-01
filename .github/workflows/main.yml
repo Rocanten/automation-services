@@ -19,7 +19,7 @@ jobs:
       -
         name: Source
         run: |
-          source "/home/runner/.bashrc"
+          exec -l $SHELL
       -
         name: Yandex Cloud login
         uses: yc-actions/yc-cr-login@v1
