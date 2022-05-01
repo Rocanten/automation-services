@@ -13,6 +13,10 @@ jobs:
         name: Checkout
         uses: actions/checkout@v2
       -
+        name: Install yandex CLI
+        run: |
+          curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -a
+      -
         name: Yandex Cloud login
         uses: yc-actions/yc-cr-login@v1
         with:
