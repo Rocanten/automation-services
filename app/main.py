@@ -6,7 +6,7 @@ app = FastAPI()
 
 @app.get("/")
 def get_main():
-    return {"mes": False}
+    return {"message": False}
 
 @app.post("/api/tracker/time")
 def get_week_time(command: str, ):
