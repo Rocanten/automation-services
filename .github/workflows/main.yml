@@ -20,10 +20,15 @@ jobs:
       -
         name: Build, tag, and push image to Yandex Cloud Container Registry
         env:
-          CR_REGISTRY: crpb1rh401lft0885hun
-          CR_REPO: yc-cr-github-action
+          CR_REGISTRY: ${{secrets.YANDEX_REGISTRY_ID}}
+          CR_REPO: ${{secrets.YANDEX_REPO_NAME}}
           IMAGE_TAG: ${{ github.sha }}
+          VM_ID: ${{secrets.VM_ID}}
         run: |
           docker build -t cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG .
           docker push cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG
+      -
+        name: Deploy to Yandex Cloud VM
+        run: |
+          yc compute instance update-container $VM_ID --container-image cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG
 
