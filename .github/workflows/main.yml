@@ -16,6 +16,9 @@ jobs:
         name: Install yandex CLI
         run: |
           curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -a
+      -
+        name: Source
+        run: |
           source "/home/runner/.bashrc"
       -
         name: Yandex Cloud login
