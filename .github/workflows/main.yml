@@ -13,17 +13,6 @@ jobs:
         name: Checkout
         uses: actions/checkout@v2
       -
-        name: Install yandex CLI
-        run: |
-          curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -a
-          eval "$(cat ~/.bashrc | tail -n +10)"
-          source ~/.bashrc
-          yc -h
-      -
-        name: Reload bash
-        run: |
-          source ~/.bashrc
-      -
         name: Yandex Cloud login
         uses: yc-actions/yc-cr-login@v1
         with:
@@ -41,5 +30,8 @@ jobs:
       -
         name: Deploy to Yandex Cloud VM
         run: |
+          curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -a
+          eval "$(cat ~/.bashrc | tail -n +10)"
+          source ~/.bashrc
           yc compute instance update-container $VM_ID --container-image cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG
 
