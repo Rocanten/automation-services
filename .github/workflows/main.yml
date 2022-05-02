@@ -29,9 +29,12 @@ jobs:
           docker push cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG
       -
         name: Deploy to Yandex Cloud VM
+        env:
+          YANDEX_OAUTH_TOKEN: ${{secrets.YANDEX_OAUTH_TOKEN}}
         run: |
           curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -a
           eval "$(cat ~/.bashrc | tail -n +10)"
           source ~/.bashrc
+          yc config set token $YANDEX_OAUTH_TOKEN
           yc compute instance update-container $VM_ID --container-image cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG
 
