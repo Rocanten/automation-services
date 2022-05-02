@@ -15,6 +15,7 @@ jobs:
       -
         name: Install yandex CLI
         run: |
+          echo $SHELL
           curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -a
           source ~/.bashrc
           yc -h
