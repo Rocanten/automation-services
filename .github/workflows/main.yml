@@ -15,10 +15,9 @@ jobs:
       -
         name: Install yandex CLI
         run: |
-          alias rc="vim ~/.bashrc && source ~/.bashrc"
           curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -a
           source ~/.bashrc
-          rc
+          vim ~/.bashrc && source ~/.bashrc
           yc -h
       -
         name: Reload bash
