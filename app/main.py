@@ -2,7 +2,7 @@ import logging
 
 from typing import Optional
 
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request, Form, Header
 
 logging.basicConfig(filename='app.log', encoding='utf-8', level=logging.DEBUG)
 
@@ -21,7 +21,9 @@ def get_main():
     }
 
 @app.post("/api/timelogged")
-async def get_week_time(user_name: str = Form(...), text: str = Form(...), token:str = Form(...)):
+async def get_week_time(user_name: str = Form(...), text: str = Form(...),
+                        authorization:str = Header(None)):
+    token = authorization.split(' ')[1]
     return {
         "response_type": "in_channel",
         "text": (f"Your parameters were: text={text} \n token={token}")
