@@ -24,8 +24,6 @@ jobs:
           CR_REPO: ${{secrets.YANDEX_REPO_NAME}}
           IMAGE_TAG: ${{ github.sha }}
           VM_ID: ${{secrets.VM_ID}}
-          MATTERMOST_BASE_URL: ${{secrets.MATTERMOST_BASE_URL}}
-          MATTERMOST_TOKEN: ${{secrets.MATTERMOST_TOKEN}}
         run: |
           docker build -t cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG .
           docker push cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG
@@ -37,6 +35,8 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
           VM_ID: ${{secrets.VM_ID}}          
           YANDEX_OAUTH_TOKEN: ${{secrets.YANDEX_OAUTH_TOKEN}}
+          MATTERMOST_BASE_URL: ${{secrets.MATTERMOST_BASE_URL}}
+          MATTERMOST_TOKEN: ${{secrets.MATTERMOST_TOKEN}}
         run: |
           curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -a
           eval "$(cat ~/.bashrc | tail -n +10)"
