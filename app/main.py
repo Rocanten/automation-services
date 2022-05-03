@@ -2,7 +2,7 @@ import logging
 
 from typing import Optional
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Form
 
 logging.basicConfig(filename='app.log', encoding='utf-8', level=logging.DEBUG)
 
@@ -11,11 +11,6 @@ app = FastAPI()
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
     response = await call_next(request)
-    body = b''
-    async for chunk in request.stream():
-        body += chunk
-    print(body)
-    logging.debug(body)
     return response
 
 @app.get("/")
@@ -26,8 +21,8 @@ def get_main():
     }
 
 @app.post("/api/timelogged")
-def get_week_time(command: str, ):
+async def get_week_time(user_name: str = Form(...), text: str = Form(...)):
     return {
         "response_type": "in_channel",
-        "text": "Test"
+        "text": f"Your parameters were: {text}"
     }
