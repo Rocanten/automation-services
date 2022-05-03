@@ -21,8 +21,8 @@ def get_main():
     }
 
 @app.post("/api/timelogged")
-async def get_week_time(user_name: str = Form(...), text: str = Form(...)):
+async def get_week_time(user_name: str = Form(...), text: str = Form(...), token:str = Form(...)):
     return {
         "response_type": "in_channel",
-        "text": f"Your parameters were: {text}"
+        "text": (f"Your parameters were: text={text} \n token={token}")
     }
