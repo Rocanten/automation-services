@@ -2,11 +2,4 @@ fastapi>=0.68.0,<0.69.0
 pydantic>=1.8.0,<2.0.0
 uvicorn>=0.15.0,<0.16.0
 python-multipart==0.0.5
-<<<<<<< HEAD
-<<<<<<< HEAD
 requests==2.27.1
-=======
->>>>>>> 8b86307 (Testing back message)
-=======
-requests==2.27.1
->>>>>>> dbdf893 (Added env)
