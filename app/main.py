@@ -11,9 +11,11 @@ app = FastAPI()
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
     response = await call_next(request)
-    json = await request.json()
-    print(json)
-    logging.debug(json)
+    body = b''
+    async for chunk in request.stream():
+        body += chunk
+    print(body)
+    logging.debug(body)
     return response
 
 @app.get("/")
