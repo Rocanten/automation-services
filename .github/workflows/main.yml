@@ -27,7 +27,7 @@ jobs:
           MATTERMOST_BASE_URL: ${{secrets.MATTERMOST_BASE_URL}}
           MATTERMOST_TOKEN: ${{secrets.MATTERMOST_TOKEN}}
         run: |
-          docker build --build-arg MATTERMOST_BASE_URL=$MATTERMOST_BASE_URL --build-arg MATTERMOST_TOKEN=$MATTERMOST_TOKEN -t cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG .
+          docker build -t cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG .
           docker push cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG
       -
         name: Deploy to Yandex Cloud VM
@@ -42,5 +42,5 @@ jobs:
           eval "$(cat ~/.bashrc | tail -n +10)"
           source ~/.bashrc
           yc config set token $YANDEX_OAUTH_TOKEN
-          yc compute instance update-container $VM_ID --container-image cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG
+          yc compute instance update-container $VM_ID  --container-env MATTERMOST_BASE_URL=$MATTERMOST_BASE_URL --container-env MATTERMOST_TOKEN=$MATTERMOST_TOKEN --container-image cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG
 
