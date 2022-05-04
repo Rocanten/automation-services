@@ -27,7 +27,6 @@ class Timelog:
         if hours_list:
             hours = int(hours_list[0])
         self.total_seconds = weeks*7*8*60*60 + days*8*60*60 + hours*60*60 + minutes*60
-        print(f'total seconds: {self.total_seconds}')
 
     def __str__(self):
         return ('Timelog:\n' +
