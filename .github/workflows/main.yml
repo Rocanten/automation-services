@@ -40,10 +40,11 @@ jobs:
           YANDEX_TRACKER_BASE_URL: ${{secrets.YANDEX_TRACKER_BASE_URL}}
           YANDEX_CONNECT_BASE_URL: ${{secrets.YANDEX_CONNECT_BASE_URL}}
           YANDEX_ORG_ID: ${{secrets.YANDEX_ORG_ID}}
+          YANDEX_TOKEN: ${{secrets.YANDEX_TOKEN}}
         run: |
           curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -a
           eval "$(cat ~/.bashrc | tail -n +10)"
           source ~/.bashrc
           yc config set token $YANDEX_OAUTH_TOKEN
-          yc compute instance update-container $VM_ID  --container-env MATTERMOST_BASE_URL=$MATTERMOST_BASE_URL --container-env MATTERMOST_TOKEN=$MATTERMOST_TOKEN --container-env YANDEX_CONNECT_BASE_URL=$YANDEX_CONNECT_BASE_URL --container-env YANDEX_ORG_ID=$YANDEX_ORG_ID --container-env YANDEX_TOKEN=$YANDEX_OAUTH_TOKEN  --container-env YANDEX_TRACKER_BASE_URL=$YANDEX_TRACKER_BASE_URL --container-image cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG
+          yc compute instance update-container $VM_ID  --container-env MATTERMOST_BASE_URL=$MATTERMOST_BASE_URL --container-env MATTERMOST_TOKEN=$MATTERMOST_TOKEN --container-env YANDEX_CONNECT_BASE_URL=$YANDEX_CONNECT_BASE_URL --container-env YANDEX_ORG_ID=$YANDEX_ORG_ID --container-env YANDEX_TOKEN=$YANDEX_TOKEN  --container-env YANDEX_TRACKER_BASE_URL=$YANDEX_TRACKER_BASE_URL --container-image cr.yandex/$CR_REGISTRY/$CR_REPO:$IMAGE_TAG
 
