@@ -17,15 +17,15 @@ class Day:
     def get_duration_formated(self):
         hours = int(self.total_seconds // (60 * 60))
         minutes = int(self.total_seconds // 60 - hours * 60)
-        return f'hours: {hours}, minutes: {minutes}\n'
+        return f'Hours: {hours}, minutes: {minutes}\n'
 
     def __str__(self):
         project_lines = ''
         for key, value in self.projects.items():
             hours = int(value // (60 * 60))
             minutes = int(value // 60 - hours * 60)
-            project_lines += f'{key}(hours: {hours}, minutes: {minutes})\n'
-        return (f'{self.dayweek} {self.date.strftime("%m/%d/%Y")}\n' +
-                f'{self.get_duration_formated()}\n' +
+            project_lines += f'* {key}(hours: {hours}, minutes: {minutes})\n'
+        return (f'**{self.dayweek}, {self.date.strftime("$d.%m.%Y")}**\n' +
+                f'Logged during day. {self.get_duration_formated()}\n' +
                 project_lines +
-                '----------------------------\n')
+                '\n----------------------------\n')

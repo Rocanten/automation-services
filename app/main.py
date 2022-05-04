@@ -50,7 +50,7 @@ async def get_week_time(user_name: str = Form(...), text: Optional[str] = Form(N
     
     return message_back_response('You logged some time this week!\n'
                                  + message
-                                 + '\nNote! You should log approx 40 hours per week and 8 hours per day')
+                                 + '\n\nNote! You should log approx 40 hours per week and 8 hours per day')
 
 def message_back_response(message: str):
     return {
