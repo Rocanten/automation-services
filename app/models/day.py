@@ -24,7 +24,7 @@ class Day:
         for key, value in self.projects.items():
             hours = int(value // (60 * 60))
             minutes = int(value // 60 - hours * 60)
-            project_lines += f'** {key}(hours: {hours}, minutes: {minutes})\n'
+            project_lines += f'{key}(hours: {hours}, minutes: {minutes})\n'
         return (f'{self.dayweek} {self.date.strftime("%m/%d/%Y")}\n' +
                 f'{self.get_duration_formated()}\n' +
                 project_lines +
