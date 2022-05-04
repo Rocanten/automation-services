@@ -39,4 +39,4 @@ class Timelog:
         hours = self.total_seconds % 60*60
         minutes = self.total_seconds%60 - hours*60
         seconds = self.total_seconds - hours*60*60
-        return f'Total(hours: {hours}, minutes: {minutes})'
+        return f'**Total(hours: {hours}, minutes: {minutes})**'
