@@ -28,4 +28,4 @@ class Day:
         return (f'{self.dayweek} {self.date.strftime("%m/%d/%Y")}\n' +
                 f'{self.get_duration_formated()}\n' +
                 project_lines +
-                '----------------------------')
+                '----------------------------\n')
