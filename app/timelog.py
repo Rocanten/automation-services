@@ -22,7 +22,7 @@ def get_logged_time(email: str, period: str) -> str:
 
         days_text = ''
         
-        for i in range(0,6):
+        for i in range(0,7):
            day_date = week_start + timedelta(days=i)
            day = Day(day_date)
            for timelog in timelogs:
