@@ -1,4 +1,4 @@
-# Mattermost commands for Yandex Tracker
+# Chat commands
 
 ## Overview
 This project provides a ready to use application for adding new commands to mattermost.
