@@ -31,6 +31,7 @@ Also the project has a ready build and deploy workflow for deploying in Yandex C
 ## Mattermost setup
 You should setup a slash command to make everything work. 
 The command for getting logged time should have two parameters:
+
     <command-name> [who] [period]
 [who] is the user for whom logged time is displayed
 [period] is the period for getting logged time. Now only one value is supported - _week_
