@@ -1,7 +1,7 @@
 # Chat commands
 
 ## Overview
-This project provides a ready to use application for adding new commands to mattermost.
+This project provides a ready to use application for adding new commands to mattermost and other messaging apps.
 
 At this time the app supports following commands:
 * time [me] [week] - get logged time from Yandex Tracker for current mattermost user during current week.
