@@ -45,6 +45,7 @@ The app uses some third party libraries, which you can find in requirements.txt.
 * requests - for making http requests
 * isodate - for parsing iso dates
 * pytz - for timezones info
+* numpy - for selecting, grouping and other operations with timelog data
 
 ## Roadmap
 I plan to add some features in the future:
