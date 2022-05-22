@@ -4,7 +4,10 @@
 This project provides a ready to use application for adding new commands to mattermost and other messaging apps.
 
 At this time the app supports following commands:
-* time [me] [week] - get logged time from Yandex Tracker for current mattermost user during current week.
+* time me week - get logged time from Yandex Tracker for current mattermost user during current week.
+* time me lastweek - get logged time from Yandex Tracker for current mattermost user during current last week.
+* time me month - get logged time from Yandex Tracker for current mattermost user during current month.
+* time me lastmonth - get logged time from Yandex Tracker for current mattermost user during last month.
 
 Important! Users in mattermost and yandex tracker must have the same email address.
 
@@ -33,8 +36,8 @@ You should setup a slash command to make everything work.
 The command for getting logged time should have two parameters:
 
     <command-name> [who] [period]
-[who] is the user for whom logged time is displayed
-[period] is the period for getting logged time. Now only one value is supported - _week_
+[who] is the user for whom logged time is displayed. Only _me_ is supported now
+[period] is the period for getting logged time. The app supports the following values at this moment: _week, lastweek, month, lastmonth_
 
 ## Dependencies
 The app uses some third party libraries, which you can find in requirements.txt.
