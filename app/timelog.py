@@ -34,7 +34,7 @@ def get_days_text_for_period(dataframe: pandas.DataFrame, period_start: date, pe
     current_day = period_start
     text = ''
     while current_day <= period_end:
-        day_text = f'{current_day.strftime("%A, %d %b %Y")}\n'
+        day_text = f'\n **{current_day.strftime("%A, %d %b %Y")}** \n'
         project_texts = []
         try:
             df_date = dataframe[dataframe['start_date'] == current_day]
@@ -121,7 +121,6 @@ def get_last_month_time(email: str) -> str:
     day_last_month = now - timedelta(days=now.day+5)
     month_start = get_month_start(day_last_month)
     month_end = get_month_end(day_last_month)
-    logging.info(f'Month start: {month_start}')
     timelogs_raw = get_raw_logged_time_period(email, period_start, period_end)
     df = pandas.DataFrame(timelogs_raw)
     total_seconds = get_seconds_for_period(df, month_start.date(), month_end.date())
