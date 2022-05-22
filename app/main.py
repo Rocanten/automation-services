@@ -51,7 +51,7 @@ async def get_time(user_name: str = Form(...), text: Optional[str] = Form(None),
         return message_back_response('Unknown command')
     
     
-    return message_back_response('You logged some time this week!\n'
+    return message_back_response('Here is your logged time for the period!\n'
                                  + message
                                  + '\n\nNote! You should log approx 40 hours per week and 8 hours per day')
 

@@ -34,7 +34,7 @@ def get_days_text_for_period(dataframe: pandas.DataFrame, period_start: date, pe
     current_day = period_start
     text = ''
     while current_day <= period_end:
-        day_text = f'\n **{current_day.strftime("%A, %d %b %Y")}** \n'
+        day_text = f'\n**{current_day.strftime("%A, %d %b %Y")}** \n'
         project_texts = []
         try:
             df_date = dataframe[dataframe['start_date'] == current_day]
