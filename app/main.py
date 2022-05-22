@@ -40,7 +40,12 @@ async def get_time(user_name: str = Form(...), text: Optional[str] = Form(None),
 
     parameters = text.split(' ')[:2]
     if len(parameters) < 2:
-        return message_back_response('Please, provide both parameters')
+        if parameters[0] == 'me':
+            return message_back_response('Please, provide both parameters')
+        elif parameters[0] == 'help':
+            return message_back_response(get_help_text())
+        else:
+            return message_back_response('Unknown command. Please use help to get all available commands')
 
     if parameters[0] == 'me':
         try:
@@ -48,7 +53,7 @@ async def get_time(user_name: str = Form(...), text: Optional[str] = Form(None),
         except RuntimeError as error:
             return message_back_response(str(error))
     else:
-        return message_back_response('Unknown command')
+        return message_back_response('Unknown command. Please use help to get all available commands')
     
     
     return message_back_response('Here is your logged time for the period!\n'
@@ -62,3 +67,8 @@ def message_back_response(message: str):
         "text": (message)
         }
 
+def get_help_text() -> str:
+    return (f'*/time me week* - get logged time during current week\n' +
+        f'*/time me lastweek* - get logged time during last week\n' +
+        f'*/time me month* - get logged time during current month\n' +
+        f'*/time me lastmonth* - get logged time during last month\n')
