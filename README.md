@@ -48,14 +48,14 @@ The app uses some third party libraries, which you can find in requirements.txt.
 
 ## Roadmap
 I plan to add some features in the future:
-* Getting logged time for month
-* Getting logged time for different user
-* Integration with Jira
-* Integration with Slack
-* Integration with Telegram
-* Auto sending messages about not logged time
-* Deleting logged time
-* Updating logged time
+* [x] Getting logged time for month
+* [ ] Getting logged time for different user
+* [ ] Integration with Jira
+* [ ] Integration with Slack
+* [ ] Integration with Telegram
+* [ ] Auto sending messages about not logged time
+* [ ] Deleting logged time
+* [ ] Updating logged time
 
 Also I would like to add commands for other info, like project metrics, team metrics, task stats etc.
     
