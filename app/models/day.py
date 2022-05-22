@@ -15,7 +15,6 @@ class Day:
             self.projects[project_key] = seconds
 
     def get_duration_formated(self):
-        print(f'total seconds per day: {self.total_seconds}')
         hours = int(self.total_seconds // (60 * 60))
         minutes = int(self.total_seconds // 60 - hours * 60)
         return f'Hours: {hours}, minutes: {minutes}\n'

@@ -1,5 +1,6 @@
 import isodate, re
 from datetime import datetime, timedelta
+from utils.datetime import iso_duration_to_work_seconds
 
 class Timelog:
     def __init__(self, issue_key, comment,
@@ -10,23 +11,7 @@ class Timelog:
         self.author_id = author_id
         self.created = isodate.parse_datetime(created)
         self.start = isodate.parse_datetime(start)
-        weeks = 0
-        weeks_list = re.findall(r"(\d+)W", duration)
-        if weeks_list:
-            weeks = int(weeks_list[0])
-        days = 0
-        days_list = re.findall(r"(\d+)D", duration)
-        if days_list:
-            days = int(days_list[0])
-        minutes = 0
-        minutes_list = re.findall(r"(\d+)M", duration)
-        if minutes_list:
-            minutes = int(minutes_list[0])
-        hours = 0
-        hours_list = re.findall(r"(\d+)H", duration)
-        if hours_list:
-            hours = int(hours_list[0])
-        self.total_seconds = weeks*7*8*60*60 + days*8*60*60 + hours*60*60 + minutes*60
+        self.total_seconds = iso_duration_to_work_seconds(duration, 8)
 
     def __str__(self):
         return ('Timelog:\n' +

@@ -11,21 +11,24 @@ logging.basicConfig(filename='app.log', encoding='utf-8', level=logging.DEBUG)
 
 app = FastAPI()
 
+
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
     response = await call_next(request)
     return response
 
+
 @app.get("/")
 def get_main():
     return {
         "message": "Hello world :)",
-        "user_message": "CD works"
+        "user_message": "CD works!"
     }
 
+
 @app.post("/api/timelogged")
-async def get_week_time(user_name: str = Form(...), text: Optional[str] = Form(None),
-                        authorization:str = Header(None)):
+async def get_time(user_name: str = Form(...), text: Optional[str] = Form(None),
+                        authorization: str = Header(None)):
     if not text:
         return message_back_response('You haven\'t provided any command. Please use help to get all available commands')
     try:
@@ -51,6 +54,7 @@ async def get_week_time(user_name: str = Form(...), text: Optional[str] = Form(N
     return message_back_response('You logged some time this week!\n'
                                  + message
                                  + '\n\nNote! You should log approx 40 hours per week and 8 hours per day')
+
 
 def message_back_response(message: str):
     return {
