@@ -37,7 +37,7 @@ def request_logged_time(email: str, period_start, period_end) -> list:
             'to': f'{period_end.isoformat()}'
             }
         }
-    r = requests.post(yandex_tracker_base_url + '/worklog/_search', json=payload, headers=headers)
+    r = requests.post(yandex_tracker_base_url + '/worklog/_search?perPage=1000', json=payload, headers=headers)
     return r.json()
 
 def get_raw_logged_time_period(email: str, period_start, period_end) -> list:

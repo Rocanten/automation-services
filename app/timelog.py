@@ -21,6 +21,8 @@ def get_logged_time(email: str, period: str) -> str:
         result = get_month_time(email)
     elif period == 'lastmonth':
         result = get_last_month_time(email)
+    elif period == 'today':
+        result = get_today_time(email)
     else:
         raise RuntimeError('Unknown period')
     return result
@@ -132,3 +134,16 @@ def get_last_month_time(email: str) -> str:
 
     return result
 
+def get_today_time(email: str) -> str:
+    result = ''
+    now = datetime.now()
+    timelogs_raw = get_raw_logged_time_period(email, period_start, period_end)
+    df = pandas.DataFrame(timelogs_raw)
+    total_seconds = get_seconds_for_period(df, now.date(), now.date())
+
+    days_text = get_days_text_for_period(df, now.date(), now.date())
+    total_text = get_total_text(total_seconds)
+
+    result = f'{days_text}{total_text}'
+
+    return result
