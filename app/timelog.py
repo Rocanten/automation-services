@@ -42,6 +42,7 @@ def get_days_text_for_period(dataframe: pandas.DataFrame, period_start: date, pe
             df_date = dataframe[dataframe['start_date'] == current_day]
         except Exception as e:
             raise RuntimeError(f"You haven't logged any time during this period")
+        total_day_seconds = get_seconds_for_period(dataframe, current_day, current_day)
         df_date_grouped_by_project = df_date.groupby(by=['project']).sum().reset_index()
         project_texts = ([get_day_project_message(project, seconds) 
             for project, seconds 
@@ -50,7 +51,8 @@ def get_days_text_for_period(dataframe: pandas.DataFrame, period_start: date, pe
             day_text += "No time logged"
         else:
             day_text += '\n'.join(project_texts)
-        day_text += '\n'
+        total_day_text = get_total_day_text(total_day_seconds)
+        day_text += f'\n{total_day_text}\n'
         text += day_text
         current_day += timedelta(days=1)
     return text
@@ -68,6 +70,11 @@ def get_total_text(seconds: int) -> str:
     hours: int = int(seconds//(60*60))
     minutes: int = int(seconds//60 - hours*60)
     return f'Total(hours: {hours}, minutes: {minutes})'
+
+def get_total_day_text(seconds: int) -> str:
+    hours: int = int(seconds//(60*60))
+    minutes: int = int(seconds//60 - hours*60)
+    return f'Logged during day(hours: {hours}, minutes: {minutes})'
 
 def get_week_time(email: str):
     result = ''
