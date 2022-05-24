@@ -9,7 +9,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 headers = {
         'Authorization':f'OAuth {yandex_token}',
-        'X-Org-ID': yandex_org_id
+        'X-Org-ID': yandex_org_id,
+        'Cache-Control': 'no-cache'
     }
 
 def get_users():
