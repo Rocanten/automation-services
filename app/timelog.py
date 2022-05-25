@@ -40,6 +40,7 @@ def get_days_text_for_period(dataframe: pandas.DataFrame, period_start: date, pe
         project_texts = []
         try:
             df_date = dataframe[dataframe['start_date'] == current_day]
+            print(df_date)
         except Exception as e:
             raise RuntimeError(f"You haven't logged any time during this period")
         total_day_seconds = get_seconds_for_period(dataframe, current_day, current_day)
