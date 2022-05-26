@@ -1,8 +1,8 @@
-import logging
+import logging, uuid
 
 from typing import Optional
 
-from fastapi import FastAPI, Request, Form, Header, HTTPException
+from fastapi import FastAPI, Request, Form, Header, HTTPException, Response
 
 from app.timelog import get_logged_time
 from app.mattermost.api import get_user_email
@@ -10,12 +10,6 @@ from app.mattermost.api import get_user_email
 logging.basicConfig(filename='app.log', encoding='utf-8', level=logging.DEBUG)
 
 app = FastAPI()
-
-
-@app.middleware("http")
-async def add_process_time_header(request: Request, call_next):
-    response = await call_next(request)
-    return response
 
 
 @app.get("/")
@@ -27,8 +21,8 @@ def get_main():
 
 
 @app.post("/api/timelogged")
-async def get_time(user_name: str = Form(...), text: Optional[str] = Form(None),
-                        authorization: str = Header(None)):
+async def get_time(response: Response, user_name: str = Form(...), text: Optional[str] = Form(None),
+    authorization: str = Header(None)):
     if not text:
         return message_back_response('You haven\'t provided any command. Please use help to get all available commands')
     try:
@@ -54,8 +48,8 @@ async def get_time(user_name: str = Form(...), text: Optional[str] = Form(None),
             return message_back_response(str(error))
     else:
         return message_back_response('Unknown command. Please use help to get all available commands')
-    
-    
+
+     
     return message_back_response('Here is your logged time for the period!\n'
                                  + message
                                  + '\n\nNote! You should log approx 40 hours per week and 8 hours per day')

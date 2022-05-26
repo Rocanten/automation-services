@@ -6,9 +6,6 @@ from app.models.timelog import Timelog
 from app.models.day import Day
 from utils.datetime import get_week_start, get_week_end, get_month_start, get_month_end
 
-period_start = datetime.now() - timedelta(days=90)
-period_end = datetime.now()
-
 logging.basicConfig(filename='app.log', encoding='utf-8', level=logging.DEBUG)
 
 def get_logged_time(email: str, period: str) -> str:
@@ -40,7 +37,6 @@ def get_days_text_for_period(dataframe: pandas.DataFrame, period_start: date, pe
         project_texts = []
         try:
             df_date = dataframe[dataframe['start_date'] == current_day]
-            print(df_date)
         except Exception as e:
             raise RuntimeError(f"You haven't logged any time during this period")
         total_day_seconds = get_seconds_for_period(dataframe, current_day, current_day)
@@ -82,7 +78,7 @@ def get_week_time(email: str):
     now = datetime.now()
     week_start = get_week_start(now)
     week_end = get_week_end(now)
-    timelogs_raw = get_raw_logged_time_period(email, period_start, period_end)
+    timelogs_raw = get_raw_logged_time_period(email)
     df = pandas.DataFrame(timelogs_raw)
     total_seconds = get_seconds_for_period(df, week_start.date(), week_end.date())
 
@@ -98,7 +94,7 @@ def get_last_week_time(email: str) -> str:
     day_last_week = datetime.now() - timedelta(days=7)
     week_start = get_week_start(day_last_week)
     week_end = get_week_end(day_last_week)
-    timelogs_raw = get_raw_logged_time_period(email, period_start, period_end)
+    timelogs_raw = get_raw_logged_time_period(email)
     df = pandas.DataFrame(timelogs_raw)
     total_seconds = get_seconds_for_period(df, week_start.date(), week_end.date())
 
@@ -114,7 +110,7 @@ def get_month_time(email: str) -> str:
     now = datetime.now()
     month_start = get_month_start(now)
     month_end = get_month_end(now)
-    timelogs_raw = get_raw_logged_time_period(email, period_start, period_end)
+    timelogs_raw = get_raw_logged_time_period(email)
     df = pandas.DataFrame(timelogs_raw)
     total_seconds = get_seconds_for_period(df, month_start.date(), month_end.date())
 
@@ -131,7 +127,7 @@ def get_last_month_time(email: str) -> str:
     day_last_month = now - timedelta(days=now.day+5)
     month_start = get_month_start(day_last_month)
     month_end = get_month_end(day_last_month)
-    timelogs_raw = get_raw_logged_time_period(email, period_start, period_end)
+    timelogs_raw = get_raw_logged_time_period(email)
     df = pandas.DataFrame(timelogs_raw)
     total_seconds = get_seconds_for_period(df, month_start.date(), month_end.date())
 
@@ -145,7 +141,7 @@ def get_last_month_time(email: str) -> str:
 def get_today_time(email: str) -> str:
     result = ''
     now = datetime.now()
-    timelogs_raw = get_raw_logged_time_period(email, period_start, period_end)
+    timelogs_raw = get_raw_logged_time_period(email)
     df = pandas.DataFrame(timelogs_raw)
     total_seconds = get_seconds_for_period(df, now.date(), now.date())
 

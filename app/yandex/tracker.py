@@ -1,5 +1,6 @@
-import requests, datetime, isodate, logging
+import requests, datetime, isodate, logging, uuid
 from datetime import datetime as dt
+from datetime import timedelta
 
 from app.config import yandex_tracker_base_url, yandex_token, yandex_org_id, yandex_connect_base_url
 from app.models.timelog import Timelog
@@ -10,7 +11,7 @@ logging.basicConfig(level=logging.DEBUG)
 headers = {
         'Authorization':f'OAuth {yandex_token}',
         'X-Org-ID': yandex_org_id,
-        'Cache-Control': 'no-cache'
+        "Cache-Control": "no-cache, max-age=0"
     }
 
 def get_users():
@@ -30,20 +31,23 @@ def get_users():
 
 users = get_users()
 
-def request_logged_time(email: str, period_start, period_end) -> list:
+def request_logged_time(email: str, days: int = 90) -> list:
+    period_start = dt.now() - timedelta(days=days)
+    period_end = dt.now()
     payload = {
     'createdBy': users[email],
         'createdAt': {
-            'from': f'{period_start.isoformat()}',
+            'from': f'{(period_start - timedelta(minutes=1)).isoformat()}',
             'to': f'{period_end.isoformat()}'
             }
         }
-    r = requests.post(yandex_tracker_base_url + '/worklog/_search?perPage=1000', json=payload, headers=headers)
-    return r.json()
+    s = requests.session()
+    response = s.post(yandex_tracker_base_url + f'/worklog/_search?perPage=1000', json=payload, headers=headers)
+    return response.json()
 
-def get_raw_logged_time_period(email: str, period_start, period_end) -> list:
+def get_raw_logged_time_period(email: str) -> list:
     result = []
-    items = request_logged_time(email, period_start, period_end)
+    items = request_logged_time(email)
     for item in items:
         issue = parse_object('issue', item)
         if not issue:
