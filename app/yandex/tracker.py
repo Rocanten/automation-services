@@ -19,7 +19,7 @@ def get_users():
     payload = {
         'fields': 'email',
         'page': 1,
-        'per_page': 1000
+        'per_page': 1005
         }
     r = requests.get(yandex_connect_base_url + '/users', params=payload, headers=headers)
     if r.status_code != 200:
