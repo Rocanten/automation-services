@@ -6,6 +6,8 @@ from app.config import yandex_tracker_base_url, yandex_token, yandex_org_id, yan
 from app.models.timelog import Timelog
 from utils.datetime import iso_duration_to_work_seconds
 
+PER_PAGE = 300
+
 logging.basicConfig(level=logging.DEBUG)
 
 headers = {
@@ -44,6 +46,59 @@ def request_logged_time(email: str, days: int = 90) -> list:
     s = requests.session()
     response = s.post(yandex_tracker_base_url + f'/worklog/_search?perPage=1000', json=payload, headers=headers)
     return response.json()
+
+def request_all_logged_time(period_start: datetime, period_end: datetime, page: int, per_page: int):
+    result = []
+    payload = {
+        'createdAt':{}
+    }
+
+    if period_start:
+        payload['createdAt']['from'] = period_start.isoformat()
+    if period_end:
+        payload['createdAt']['to'] = period_end.isoformat()
+    s = requests.session()
+    response = s.post(yandex_tracker_base_url + f'/worklog/_search?perPage={per_page}&page={page}', json=payload, headers=headers)
+    raw = response.json()
+    for item in raw:
+        start = datetime.datetime.strptime(item['start'], '%Y-%m-%dT%H:%M:%S.%f%z')
+        worklog = {
+            'project': item['issue']['key'].split('-')[0],
+            'issue_key': item['issue']['key'],
+            'issue_display': item['issue']['display'],
+            'author_id': item['createdBy']['id'],
+            'author_name': item['createdBy']['display'],
+            'createdAt': item['createdAt'],
+            'start': item['start'],
+            'start_date': start.strftime('%Y-%m-%d'),
+            'duration': iso_duration_to_work_seconds(item['duration'], 8)
+        }
+        result.append(worklog)
+    return result
+
+def request_worklogs_count(period_start: datetime, period_end: datetime) -> int:
+    payload = {
+        'createdAt':{}
+    }
+
+    if period_start:
+        payload['createdAt']['from'] = period_start.isoformat()
+    if period_end:
+        payload['createdAt']['to'] = period_end.isoformat()
+
+    s = requests.session()
+    response = s.post(yandex_tracker_base_url + f'/worklog/_search?perPage=1&page=1', json=payload, headers=headers)
+    return int(response.headers['X-Total-Count'])
+
+def get_all_worklogs(period_start: datetime = None, period_end: datetime = None):
+    worklogs = []
+    worklogs_count = request_worklogs_count(period_start, period_end)
+    pages_count = worklogs_count // PER_PAGE + 1
+    for page in range(1, pages_count + 1):
+        chunk = request_all_logged_time(period_start, period_end, page, PER_PAGE)
+        worklogs.extend(chunk)
+    return worklogs
+
 
 def get_raw_logged_time_period(email: str) -> list:
     result = []
