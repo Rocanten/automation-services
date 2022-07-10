@@ -8,6 +8,7 @@ from app.models.command import Command
 from utils.datetime import get_month_start, get_month_end
 from app.models.period import Period
 from app.yandex.connect import get_users_email_id
+from app.config import service_url
 
 delta_to_log_time = timedelta(days = 14)
 
@@ -59,7 +60,7 @@ def get_users_report(command: Command) -> str:
     df_pivot.index.names = ['Сотрудник', 'Проект']
     report_name = generate_report_name('users')
     df_pivot.to_excel(f'static/{report_name}', index=True, float_format='%.2f')
-    return f'http://127.0.0.1:80/static/{report_name}'
+    return f'{service_url}static/{report_name}'
 
 def get_report_current_month(project: str) -> str:
     now = datetime.now()
