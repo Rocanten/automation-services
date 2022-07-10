@@ -51,13 +51,14 @@ def get_users_report(command: Command) -> str:
 
     if command.get_option('projects'):
         df_pivot = pandas.pivot_table(df, values='duration', index=['author_name', 'project'], columns='start_date', aggfunc=numpy.sum)
+        df_pivot.index.names = ['Сотрудник', 'Проект']
     else:
         df_pivot = df.pivot_table(values='duration', index=['author_name'], columns='start_date', aggfunc=numpy.sum)
+        df_pivot.index.names = ['Сотрудник']
 
     df_pivot = df_pivot/3600
     df_pivot['Всего за период'] = df_pivot.sum(axis=1)
     df_pivot = df_pivot.sort_index(axis=1)
-    df_pivot.index.names = ['Сотрудник', 'Проект']
     report_name = generate_report_name('users')
     df_pivot.to_excel(f'static/{report_name}', index=True, float_format='%.2f')
     return f'{service_url}static/{report_name}'
