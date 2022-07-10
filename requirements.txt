@@ -7,3 +7,5 @@ isodate==0.6.1
 pytz==2022.1
 pytest==7.1.2
 pandas==1.4.2
+openpyxl==3.0.10
+aiofiles==0.8.0

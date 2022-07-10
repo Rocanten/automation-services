@@ -39,6 +39,50 @@ The command for getting logged time should have two parameters:
 [who] is the user for whom logged time is displayed. Only _me_ is supported now.
 [period] is the period for getting logged time. The app supports the following values at this moment: _week, lastweek, month, lastmonth_.
 
+## Usage
+### Getting time tracked
+```
+<time_command> me week
+<time_command> me lastweek
+<time_command> me month
+<time_command> me lastmonth
+<time_command> me today
+```
+### Getting reports
+```
+<report_command> users <options>
+```
+Available options:
+
+``` -d <date_start>-<date_end>``` - specify report period in format dd.mm.yyyy-dd.mm.yyyy. 
+Example: ```<report_command> users -p 20.01.2019-30.04.2019```
+
+``` -u <user1>,<user2>``` - specify users, list users separated by comma, no whitespaces. Example: ```-u user1@company.com,user2@company.com ```
+
+``` -projects ``` - include detalization by projects
+
+```
+<report_command> projects <options>
+```
+Available options:
+``` -t ``` - include detalization by tasks
+``` -projects ``` - specify projects keys
+``` -d <date_start>-<date_end>``` - specify report period in format dd.mm.yyyy-dd.mm.yyyy. 
+
+```
+<report_command> tasks <options>
+```
+Available options:
+``` -d <date_start>-<date_end>``` - specify report period in format dd.mm.yyyy-dd.mm.yyyy.
+``` -projects ``` - specify projects keys
+``` -t ``` - specify tasks keys
+
+```
+<report_command> client <options>
+```
+``` -d <date_start>-<date_end>``` - specify report period in format dd.mm.yyyy-dd.mm.yyyy.
+``` -projects ``` - specify project
+
 ## Dependencies
 The app uses some third party libraries, which you can find in requirements.txt.
 * fastapi - for simple web service with Rest API
