@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, date
 import pytz, pandas, numpy, logging
 
-from app.yandex.tracker import get_logged_time_period, get_raw_logged_time_period
+from app.datasource import get_raw_logged_time_period
 from app.models.timelog import Timelog
 from app.models.day import Day
 from utils.datetime import get_week_start, get_week_end, get_month_start, get_month_end
@@ -96,6 +96,7 @@ def get_last_week_time(email: str) -> str:
     week_end = get_week_end(day_last_week)
     timelogs_raw = get_raw_logged_time_period(email)
     df = pandas.DataFrame(timelogs_raw)
+    df.to_csv('static/timelogs.csv', index=True, float_format='%.2f')
     total_seconds = get_seconds_for_period(df, week_start.date(), week_end.date())
 
     days_text = get_days_text_for_period(df, week_start.date(), week_end.date())
@@ -129,6 +130,7 @@ def get_last_month_time(email: str) -> str:
     month_end = get_month_end(day_last_month)
     timelogs_raw = get_raw_logged_time_period(email)
     df = pandas.DataFrame(timelogs_raw)
+    df.to_csv('static/timelogs.csv', index=True, float_format='%.2f')
     total_seconds = get_seconds_for_period(df, month_start.date(), month_end.date())
 
     days_text = get_days_text_for_period(df, month_start.date(), month_end.date())

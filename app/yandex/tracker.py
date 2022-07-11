@@ -127,10 +127,15 @@ def get_raw_logged_time_period(email: str) -> list:
             'project': project,
             'comment': comment, 
             'author_id': author_id, 
+            'author_email': '', 
+            'author_name': '', 
             'created': created, 
             'start': start,
             'start_date': start_date,
-            'duration': iso_duration_to_work_seconds(duration, 8)
+            'duration': iso_duration_to_work_seconds(duration, 8),
+            'issue_id': '0',
+            'issue_display': '',
+            'status': ''
         }
         result.append(timelog)
     return result
