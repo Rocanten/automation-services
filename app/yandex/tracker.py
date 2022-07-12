@@ -47,18 +47,39 @@ def request_all_logged_time(period_start: datetime, period_end: datetime, page: 
     response = s.post(yandex_tracker_base_url + f'/worklog/_search?perPage={per_page}&page={page}', json=payload, headers=headers)
     raw = response.json()
     for item in raw:
-        start = datetime.datetime.strptime(item['start'], '%Y-%m-%dT%H:%M:%S.%f%z')
-        worklog = {
-            'project': item['issue']['key'].split('-')[0],
-            'issue_key': item['issue']['key'],
-            'issue_display': item['issue']['display'],
-            'author_id': item['createdBy']['id'],
-            'author_name': item['createdBy']['display'],
-            'createdAt': item['createdAt'],
-            'start': item['start'],
-            'start_date': start.strftime('%Y-%m-%d'),
-            'duration': iso_duration_to_work_seconds(item['duration'], 8)
-        }
+        issue = parse_object('issue', item)
+        if not issue:
+            continue
+        issue_key = parse_string('key', issue)
+        if not issue_key:
+            continue
+        comment = parse_string('comment', item)
+        author = parse_object('createdBy', item)
+        if not author:
+            continue
+        author_id = parse_number('id', author)
+        created = parse_string('createdAt', item)
+        start = parse_string('start', item)
+        duration = parse_string('duration', item)
+        if not (created or author_id or start or duration):
+            raise RuntimeError('Fields createdAt or start or duration failed to parse')
+        start = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M:%S.%f%z')
+        user = get_user_by(yandex_id=int(item['createdBy']['id']))
+        print(f'user: {user}')
+        worklog = Worklog(
+                author_email=user.email,
+                created=item['createdAt'],
+                start=start,
+                duration=iso_duration_to_work_seconds(duration, 8),
+                issue_key=issue_key,
+                comment='',
+                author_yandex_id=user.yandex_id,
+                author_name=user.display_name,
+                issue_summary='',
+                status='',
+                project = issue_key.split('-')[0]
+            )
+
         result.append(worklog)
     return result
 

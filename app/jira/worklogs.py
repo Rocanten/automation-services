@@ -68,8 +68,8 @@ def request_worklogs(ids: list) -> list:
 				created=created,
 				start=start,
 				duration=item['timeSpentSeconds'],
-				author_id=author_id,
-				author_name=item['author']['displayName'],
+				author_yandex_id=author_id,
+				author_name=user.display_name,
 				jira_issue_id=item['issueId']
 			)
 		result.append(worklog)

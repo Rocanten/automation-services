@@ -27,11 +27,14 @@ def get_users():
             department_id = user_json['department']['id']
         except:
             department_id = None
+        first_name = user_json['name']['first']
+        last_name =user_json['name']['last'] 
         user = User(
                 email=user_json['email'],
                 yandex_id=user_json['id'],
                 name=user_json['name']['first'],
                 surname=user_json['name']['last'],
+                display_name=f'{first_name} {last_name}',
                 department_id=department_id
             )
         result.append(user)

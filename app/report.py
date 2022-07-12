@@ -2,13 +2,12 @@ from datetime import datetime, timedelta, date
 import pytz, pandas, numpy
 from pathlib import Path  
 
-
-from app.yandex.tracker import get_all_worklogs
 from app.models.command import Command
 from utils.datetime import get_month_start, get_month_end
 from app.models.period import Period
 from app.yandex.connect import get_user_by
 from app.config import service_url
+from app.datasource import get_all_worklogs
 
 delta_to_log_time = timedelta(days = 14)
 
@@ -25,29 +24,31 @@ def get_users_report(command: Command) -> str:
 
 
     worklogs = get_all_worklogs(period.startdate, period.enddate + delta_to_log_time)
-    df = pandas.DataFrame(worklogs)
+    df = pandas.DataFrame.from_records([w.to_dict() for w in worklogs])
 
-    print(command.get_option('u'))
+    df.to_csv('static/raw.csv', index=True, float_format='%.2f')
 
     if command.get_option('u'):
-        users_email_id = get_users_email_id()
-        users = command.get_users()
-        users = [str(users_email_id[user]) for user in users]
-        df = df[df['author_id'].isin(users)]
+        emails = command.get_users()
+        yandex_ids = [get_user_by(email=email).yandex_id for email in emails]
+        df = df[df['author_id'].isin(yandex_ids)]
 
+    df.to_csv('static/tmp.csv', index=True, float_format='%.2f')
 
 
     df['start'] = pandas.to_datetime(df['start'])
+
     df = df[(df['start'] > period.startdate.isoformat()) & (df['start'] <= period.enddate.isoformat())]
+
 
     if command.get_option('projects'):
         df = df.groupby(['author_name', 'start_date', 'project']).sum()
     else:
         df = df.groupby(['author_name', 'start_date']).sum()
 
-    df.to_csv('static/tmp.csv', index=True, float_format='%.2f')
 
     df.sort_values(['author_name', 'start_date'], ascending=[True, True])
+
 
     if command.get_option('projects'):
         df_pivot = pandas.pivot_table(df, values='duration', index=['author_name', 'project'], columns='start_date', aggfunc=numpy.sum)
@@ -60,6 +61,7 @@ def get_users_report(command: Command) -> str:
     df_pivot['Всего за период'] = df_pivot.sum(axis=1)
     df_pivot = df_pivot.sort_index(axis=1)
     report_name = generate_report_name('users')
+
     df_pivot.to_excel(f'static/{report_name}', index=True, float_format='%.2f')
     return f'{service_url}static/{report_name}'
 
