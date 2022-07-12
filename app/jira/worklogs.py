@@ -2,16 +2,14 @@ import requests
 from datetime import datetime, timedelta, date
 
 from app.config import jira_server_base_url, jira_server_personal_token
-from app.yandex.connect import get_users_email_id
+from app.yandex.connect import get_user_by
+from app.models.worklog import Worklog
 
 
 headers = {
         'Authorization':f'Bearer {jira_server_personal_token}',
         "Cache-Control": "no-cache, max-age=0"
     }
-
-users = get_users_email_id()
-
 
 def request_logged_ids(since: int) -> dict:
 	worklogIds = []
@@ -22,7 +20,8 @@ def request_logged_ids(since: int) -> dict:
 	response = s.get(
 		jira_server_base_url + f'/worklog/updated', 
 		params=payload, 
-		headers=headers
+		headers=headers,
+		timeout=6
 		)
 	print('TEXT')
 	print(response.request.url)
@@ -48,29 +47,31 @@ def request_worklogs(ids: list) -> list:
 	response = s.post(
 		jira_server_base_url + f'/worklog/list', 
 		json=payload, 
-		headers=headers
+		headers=headers,
+		timeout=6
 		)
 	response_json = response.json()
 	for item in response_json:
-		start = datetime.strptime(item['started'], '%Y-%m-%dT%H:%M:%S.%f%z').date()
+		start = datetime.strptime(item['started'], '%Y-%m-%dT%H:%M:%S.%f%z')
+		created = datetime.strptime(item['started'], '%Y-%m-%dT%H:%M:%S.%f%z')
 		try:
-			author_id = users[item['author']['emailAddress']]
+			user = get_user_by(item['author']['emailAddress'])
+			author_id = user.yandex_id
 		except KeyError as error:
 			print(f'No user with email {item["author"]["emailAddress"]}')
 			continue
-		worklog = {
-            'issue_key': '', 
-            'project': '',
-            'comment': '', 
-			'author_id': str(author_id),
-			'author_email': item['author']['emailAddress'],
-			'author_name': item['author']['displayName'],
-			'created': item['created'],
-			'start': item['started'],
-			'start_date': start,
-			'duration': item['timeSpentSeconds'],
-			'issue_id': item['issueId']
-		}
+		except AttributeError as error:
+			print(f'No user with email {item["author"]["emailAddress"]}')
+			continue
+		worklog = Worklog(
+				author_email=item['author']['emailAddress'],
+				created=created,
+				start=start,
+				duration=item['timeSpentSeconds'],
+				author_id=author_id,
+				author_name=item['author']['displayName'],
+				jira_issue_id=item['issueId']
+			)
 		result.append(worklog)
 	return result
 
@@ -78,7 +79,7 @@ def attribute_worklogs(worklogs: list) -> list:
 	attributed_worklogs = []
 	issue_ids = []
 	for worklog in worklogs:
-		issue_ids.append(worklog['issue_id'])
+		issue_ids.append(str(worklog.jira_issue_id))
 
 	s = requests.session()
 	ids = ','.join(issue_ids)
@@ -94,24 +95,27 @@ def attribute_worklogs(worklogs: list) -> list:
 	response = s.post(
 		jira_server_base_url + f'/search', 
 		json=payload, 
-		headers=headers
+		headers=headers,
+		timeout=6
 		)
 	response_json = response.json()
 	issues = response_json['issues']
+
 	for worklog in worklogs:
-		issue = next((issue for issue in issues if issue['id'] == worklog['issue_id']), None)
+		issue = next((issue for issue in issues if int(issue['id']) == worklog.jira_issue_id), None)
 		if not issue:
 			continue
-		worklog_attributed = worklog
-		worklog_attributed['project'] = issue['key'].split('-')[0]
-		worklog_attributed['issue_key'] = issue['key']
-		worklog_attributed['issue_display'] = issue['fields']['summary']
-		worklog_attributed['status'] = issue['fields']['status']['name']
-		attributed_worklogs.append(worklog_attributed)
+		worklog.project = issue['key'].split('-')[0]
+		worklog.issue_key = issue['key']
+		worklog.issue_summary = issue['fields']['summary']
+		worklog.status = issue['fields']['status']['name']
+		attributed_worklogs.append(worklog)
 	return attributed_worklogs
 		
 
-def get_worklogs(since: int = 1651429929000) -> list:
+def get_worklogs(since: int = None) -> list:
+	if not since:
+		since = int(round((datetime.now() - timedelta(days=31)).timestamp()))*1000
 	last_page = False
 	since_timestamp = since
 	worklogs = []

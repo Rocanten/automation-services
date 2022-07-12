@@ -7,7 +7,7 @@ from app.yandex.tracker import get_all_worklogs
 from app.models.command import Command
 from utils.datetime import get_month_start, get_month_end
 from app.models.period import Period
-from app.yandex.connect import get_users_email_id
+from app.yandex.connect import get_user_by
 from app.config import service_url
 
 delta_to_log_time = timedelta(days = 14)
