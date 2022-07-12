@@ -4,9 +4,11 @@ from datetime import timedelta
 
 from app.config import yandex_tracker_base_url, yandex_token, yandex_org_id, yandex_connect_base_url
 from app.models.timelog import Timelog
+from app.models.worklog import Worklog
 from utils.datetime import iso_duration_to_work_seconds
+from app.yandex.connect import get_user_by
 
-PER_PAGE = 300
+PER_PAGE = 500
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -16,28 +18,12 @@ headers = {
         "Cache-Control": "no-cache, max-age=0"
     }
 
-def get_users():
-    result = {}
-    payload = {
-        'fields': 'email',
-        'page': 1,
-        'per_page': 1005
-        }
-    r = requests.get(yandex_connect_base_url + '/users', params=payload, headers=headers)
-    if r.status_code != 200:
-        print(r.json())
-    users = r.json()['result']
-    for user in users:
-        result[user['email']] = user['id']
-    return result
-
-users = get_users()
-
-def request_logged_time(email: str, days: int = 90) -> list:
+def request_logged_time(email: str, days: int = 62) -> list:
     period_start = dt.now() - timedelta(days=days)
     period_end = dt.now()
+    user = get_user_by(email=email)
     payload = {
-    'createdBy': users[email],
+    'createdBy': user.yandex_id,
         'createdAt': {
             'from': f'{(period_start - timedelta(minutes=1)).isoformat()}',
             'to': f'{period_end.isoformat()}'
@@ -61,18 +47,39 @@ def request_all_logged_time(period_start: datetime, period_end: datetime, page: 
     response = s.post(yandex_tracker_base_url + f'/worklog/_search?perPage={per_page}&page={page}', json=payload, headers=headers)
     raw = response.json()
     for item in raw:
-        start = datetime.datetime.strptime(item['start'], '%Y-%m-%dT%H:%M:%S.%f%z')
-        worklog = {
-            'project': item['issue']['key'].split('-')[0],
-            'issue_key': item['issue']['key'],
-            'issue_display': item['issue']['display'],
-            'author_id': item['createdBy']['id'],
-            'author_name': item['createdBy']['display'],
-            'createdAt': item['createdAt'],
-            'start': item['start'],
-            'start_date': start.strftime('%Y-%m-%d'),
-            'duration': iso_duration_to_work_seconds(item['duration'], 8)
-        }
+        issue = parse_object('issue', item)
+        if not issue:
+            continue
+        issue_key = parse_string('key', issue)
+        if not issue_key:
+            continue
+        comment = parse_string('comment', item)
+        author = parse_object('createdBy', item)
+        if not author:
+            continue
+        author_id = parse_number('id', author)
+        created = parse_string('createdAt', item)
+        start = parse_string('start', item)
+        duration = parse_string('duration', item)
+        if not (created or author_id or start or duration):
+            raise RuntimeError('Fields createdAt or start or duration failed to parse')
+        start = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M:%S.%f%z')
+        user = get_user_by(yandex_id=int(item['createdBy']['id']))
+        print(f'user: {user}')
+        worklog = Worklog(
+                author_email=user.email,
+                created=item['createdAt'],
+                start=start,
+                duration=iso_duration_to_work_seconds(duration, 8),
+                issue_key=issue_key,
+                comment='',
+                author_yandex_id=user.yandex_id,
+                author_name=user.display_name,
+                issue_summary='',
+                status='',
+                project = issue_key.split('-')[0]
+            )
+
         result.append(worklog)
     return result
 
@@ -120,19 +127,21 @@ def get_raw_logged_time_period(email: str) -> list:
         start = parse_string('start', item)
         start_date = dt.strptime(start, '%Y-%m-%dT%H:%M:%S.%f%z').date()
         duration = parse_string('duration', item)
+        user = get_user_by(yandex_id=int(author_id))
         if not (created or author_id or start or duration):
             raise RuntimeError('Fields createdAt or start or duration failed to parse')
-        timelog = {
-            'issue_key': issue_key, 
-            'project': project,
-            'comment': comment, 
-            'author_id': author_id, 
-            'created': created, 
-            'start': start,
-            'start_date': start_date,
-            'duration': iso_duration_to_work_seconds(duration, 8)
-        }
-        result.append(timelog)
+        worklog = Worklog(
+                author_email=user.email,
+                created=created,
+                start=start,
+                duration=iso_duration_to_work_seconds(duration, 8),
+                issue_key=issue_key,
+                project=project,
+                comment=comment,
+                author_yandex_id=user.yandex_id,
+                author_name=user.display_name
+            )
+        result.append(worklog)
     return result
 
 

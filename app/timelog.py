@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, date
 import pytz, pandas, numpy, logging
 
-from app.yandex.tracker import get_logged_time_period, get_raw_logged_time_period
+from app.datasource import get_raw_logged_time_period
 from app.models.timelog import Timelog
 from app.models.day import Day
 from utils.datetime import get_week_start, get_week_end, get_month_start, get_month_end
@@ -36,7 +36,7 @@ def get_days_text_for_period(dataframe: pandas.DataFrame, period_start: date, pe
         day_text = f'\n**{current_day.strftime("%A, %d %b %Y")}** \n'
         project_texts = []
         try:
-            df_date = dataframe[dataframe['start_date'] == current_day]
+            df_date = dataframe[dataframe['start'] == current_day]
         except Exception as e:
             raise RuntimeError(f"You haven't logged any time during this period")
         total_day_seconds = get_seconds_for_period(dataframe, current_day, current_day)
@@ -57,7 +57,7 @@ def get_days_text_for_period(dataframe: pandas.DataFrame, period_start: date, pe
 def get_seconds_for_period(dataframe: pandas.DataFrame, period_start: date, period_end: date):
     total_seconds = 0
     try:
-        df_date = dataframe[(dataframe['start_date'] >= period_start)&(dataframe['start_date'] <= period_end)]
+        df_date = dataframe[(dataframe['start'] >= period_start)&(dataframe['start'] <= period_end)]
         total_seconds = df_date['duration'].sum()
     except KeyError as error:
         logging.warning(f'No time logged in the period, error={error}')
@@ -79,7 +79,7 @@ def get_week_time(email: str):
     week_start = get_week_start(now)
     week_end = get_week_end(now)
     timelogs_raw = get_raw_logged_time_period(email)
-    df = pandas.DataFrame(timelogs_raw)
+    df = pandas.DataFrame.from_records([w.to_dict() for w in timelogs_raw])
     total_seconds = get_seconds_for_period(df, week_start.date(), week_end.date())
 
     days_text = get_days_text_for_period(df, week_start.date(), week_end.date())
@@ -95,7 +95,7 @@ def get_last_week_time(email: str) -> str:
     week_start = get_week_start(day_last_week)
     week_end = get_week_end(day_last_week)
     timelogs_raw = get_raw_logged_time_period(email)
-    df = pandas.DataFrame(timelogs_raw)
+    df = pandas.DataFrame.from_records([w.to_dict() for w in timelogs_raw])
     total_seconds = get_seconds_for_period(df, week_start.date(), week_end.date())
 
     days_text = get_days_text_for_period(df, week_start.date(), week_end.date())
@@ -111,7 +111,7 @@ def get_month_time(email: str) -> str:
     month_start = get_month_start(now)
     month_end = get_month_end(now)
     timelogs_raw = get_raw_logged_time_period(email)
-    df = pandas.DataFrame(timelogs_raw)
+    df = pandas.DataFrame.from_records([w.to_dict() for w in timelogs_raw])
     total_seconds = get_seconds_for_period(df, month_start.date(), month_end.date())
 
     days_text = get_days_text_for_period(df, month_start.date(), month_end.date())
@@ -128,7 +128,8 @@ def get_last_month_time(email: str) -> str:
     month_start = get_month_start(day_last_month)
     month_end = get_month_end(day_last_month)
     timelogs_raw = get_raw_logged_time_period(email)
-    df = pandas.DataFrame(timelogs_raw)
+    df = pandas.DataFrame.from_records([w.to_dict() for w in timelogs_raw])
+    df.to_csv('static/timelogs.csv', index=True, float_format='%.2f')
     total_seconds = get_seconds_for_period(df, month_start.date(), month_end.date())
 
     days_text = get_days_text_for_period(df, month_start.date(), month_end.date())
@@ -142,7 +143,7 @@ def get_today_time(email: str) -> str:
     result = ''
     now = datetime.now()
     timelogs_raw = get_raw_logged_time_period(email)
-    df = pandas.DataFrame(timelogs_raw)
+    df = pandas.DataFrame.from_records([w.to_dict() for w in timelogs_raw])
     total_seconds = get_seconds_for_period(df, now.date(), now.date())
 
     days_text = get_days_text_for_period(df, now.date(), now.date())
