@@ -23,8 +23,6 @@ def request_logged_ids(since: int) -> dict:
 		headers=headers,
 		timeout=6
 		)
-	print('TEXT')
-	print(response.request.url)
 	response_json = response.json()
 	values = response_json['values']
 	for value in values:

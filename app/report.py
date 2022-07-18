@@ -33,12 +33,9 @@ def get_users_report(command: Command) -> str:
         yandex_ids = [get_user_by(email=email).yandex_id for email in emails]
         df = df[df['author_id'].isin(yandex_ids)]
 
-    df.to_csv('static/tmp.csv', index=True, float_format='%.2f')
-
-
     df['start'] = pandas.to_datetime(df['start'])
 
-    df = df[(df['start'] > period.startdate.isoformat()) & (df['start'] <= period.enddate.isoformat())]
+    df = df[(df['start'] >= period.startdate.isoformat()) & (df['start'] <= period.enddate.isoformat())]
 
 
     if command.get_option('projects'):
@@ -50,12 +47,15 @@ def get_users_report(command: Command) -> str:
     df.sort_values(['author_name', 'start_date'], ascending=[True, True])
 
 
+
     if command.get_option('projects'):
         df_pivot = pandas.pivot_table(df, values='duration', index=['author_name', 'project'], columns='start_date', aggfunc=numpy.sum)
         df_pivot.index.names = ['Сотрудник', 'Проект']
     else:
         df_pivot = df.pivot_table(values='duration', index=['author_name'], columns='start_date', aggfunc=numpy.sum)
         df_pivot.index.names = ['Сотрудник']
+
+
 
     df_pivot = df_pivot/3600
     df_pivot['Всего за период'] = df_pivot.sum(axis=1)

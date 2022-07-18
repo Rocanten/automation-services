@@ -65,7 +65,6 @@ def request_all_logged_time(period_start: datetime, period_end: datetime, page: 
             raise RuntimeError('Fields createdAt or start or duration failed to parse')
         start = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M:%S.%f%z')
         user = get_user_by(yandex_id=int(item['createdBy']['id']))
-        print(f'user: {user}')
         worklog = Worklog(
                 author_email=user.email,
                 created=item['createdAt'],
