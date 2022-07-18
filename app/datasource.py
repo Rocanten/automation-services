@@ -21,6 +21,5 @@ def get_all_worklogs(period_start: datetime = None, period_end: datetime = None)
 	total_worklogs = yandex_worklogs
 	for item in jira_worklogs:
 		total_worklogs.append(item)
-	print(total_worklogs[:5])
 	return total_worklogs
  
