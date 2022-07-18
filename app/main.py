@@ -15,6 +15,9 @@ logging.basicConfig(filename='app.log', encoding='utf-8', level=logging.DEBUG)
 
 app = FastAPI()
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
 @app.get("/")
 def get_main():
     return {
