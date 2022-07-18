@@ -3,6 +3,7 @@ import logging, uuid
 from typing import Optional
 from fastapi import FastAPI, Request, Form, Header, HTTPException, Response
 from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 
 from app.timelog import get_logged_time
 from app.mattermost.api import get_user_email
@@ -11,10 +12,8 @@ from app.report import get_report_link
 
 logging.basicConfig(filename='app.log', encoding='utf-8', level=logging.DEBUG)
 
+
 app = FastAPI()
-
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
 
 @app.get("/")
 def get_main():
