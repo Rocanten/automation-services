@@ -14,5 +14,4 @@ def get_user_email(username: str):
     elif r.status_code != 200:
         raise RuntimeError("Unexpected error from mattermosr")
     json = r.json()
-    email = json['email']
-    return email
+    return json['email']

@@ -18,7 +18,10 @@ def get_users():
         'page': 1,
         'per_page': 1000
         }
-    r = requests.get(yandex_connect_base_url + '/users', params=payload, headers=headers)
+    r = requests.get(
+        f'{yandex_connect_base_url}/users', params=payload, headers=headers
+    )
+
     if r.status_code != 200:
         print(r.json())
     users_json = r.json()['result']

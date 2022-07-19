@@ -13,10 +13,7 @@ delta_to_log_time = timedelta(days = 14)
 
 
 def get_report_link(command: Command) -> str:
-    report_link = ''
-    if command.name == 'users':
-        report_link = get_users_report(command)
-    return report_link
+    return get_users_report(command) if command.name == 'users' else ''
 
 def get_users_report(command: Command) -> str:
     if command.get_option('p'):

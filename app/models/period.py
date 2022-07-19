@@ -11,12 +11,12 @@ class Period(BaseModel):
 
 	@validator('startdate', always=True)
 	def validate_start(cls, value, values):
-		if not ('start' in values):
+		if 'start' not in values:
 			raise RuntimeError('Start date not provided')
 		return datetime.strptime(values['start'], '%d.%m.%Y')
 
 	@validator('enddate', always=True)
 	def validate_end(cls, value, values):
-		if not 'end' in values:
+		if 'end' not in values:
 			raise RuntimeError('End date not provided')
 		return datetime.strptime(values['end'], '%d.%m.%Y')

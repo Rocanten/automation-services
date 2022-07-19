@@ -3,7 +3,7 @@ import os
 def get_dict_from_csv(filename: str) -> list:
     result: list = []
     keys: list = []
-    with open('./data/' + filename, 'r') as reader:
+    with open(f'./data/{filename}', 'r') as reader:
         lines = reader.readlines()
         is_first_line: bool = True
         for line in lines:

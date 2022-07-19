@@ -45,20 +45,17 @@ class Command(BaseModel):
 				parameters.append(parameter)
 		return parameters
 
-	def get_option(self, option:str)->Parameter:
-		result = next((param for param in self.parameters if param.name == option), None)
-		return result
+	def get_option(self, option:str) -> Parameter:
+		return next((param for param in self.parameters if param.name == option), None)
 
-	def get_period(self)->Period:
+	def get_period(self) -> Period:
 		option = self.get_option('p')
 		start = option.value.split('-')[0]
 		end = option.value.split('-')[1]
-		period = Period(start=start, end=end)
-		return period
+		return Period(start=start, end=end)
 
 	def get_users(self) -> list:
 		option = self.get_option('u')
-		result = option.value.split(',')
-		return result
+		return option.value.split(',')
 
 
