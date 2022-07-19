@@ -38,16 +38,13 @@ def get_days_text_for_period(dataframe: pandas.DataFrame, period_start: date, pe
         try:
             df_date = dataframe[dataframe['start'] == current_day]
         except Exception as e:
-            raise RuntimeError(f"You haven't logged any time during this period")
+            raise RuntimeError("You haven't logged any time during this period")
         total_day_seconds = get_seconds_for_period(dataframe, current_day, current_day)
         df_date_grouped_by_project = df_date.groupby(by=['project']).sum().reset_index()
         project_texts = ([get_day_project_message(project, seconds) 
             for project, seconds 
             in zip(df_date_grouped_by_project['project'], df_date_grouped_by_project['duration'])])
-        if len(project_texts) == 0:
-            day_text += "No time logged"
-        else:
-            day_text += '\n'.join(project_texts)
+        day_text += '\n'.join(project_texts) if project_texts else "No time logged"
         total_day_text = get_total_day_text(total_day_seconds)
         day_text += f'\n{total_day_text}\n'
         text += day_text

@@ -12,29 +12,23 @@ headers = {
     }
 
 def request_logged_ids(since: int) -> dict:
-	worklogIds = []
 	s = requests.session()
 	payload = {
 		'since': since
 	}
 	response = s.get(
-		jira_server_base_url + f'/worklog/updated', 
-		params=payload, 
+		f'{jira_server_base_url}/worklog/updated',
+		params=payload,
 		headers=headers,
-		timeout=6
-		)
+		timeout=6,
+	)
+
 	response_json = response.json()
 	values = response_json['values']
-	for value in values:
-		worklogIds.append(value['worklogId'])
+	worklogIds = [value['worklogId'] for value in values]
 	last_page = response_json['lastPage']
 	until = response_json['until']
-	result = {
-		'worklogIds': worklogIds,
-		'lastPage': last_page,
-		'until': until
-	}
-	return result
+	return {'worklogIds': worklogIds, 'lastPage': last_page, 'until': until}
 
 def request_worklogs(ids: list) -> list:
 	result = []
@@ -43,11 +37,12 @@ def request_worklogs(ids: list) -> list:
 		'ids': ids
 	}
 	response = s.post(
-		jira_server_base_url + f'/worklog/list', 
-		json=payload, 
+		f'{jira_server_base_url}/worklog/list',
+		json=payload,
 		headers=headers,
-		timeout=6
-		)
+		timeout=6,
+	)
+
 	response_json = response.json()
 	for item in response_json:
 		start = datetime.strptime(item['started'], '%Y-%m-%dT%H:%M:%S.%f%z')
@@ -55,10 +50,7 @@ def request_worklogs(ids: list) -> list:
 		try:
 			user = get_user_by(item['author']['emailAddress'])
 			author_id = user.yandex_id
-		except KeyError as error:
-			print(f'No user with email {item["author"]["emailAddress"]}')
-			continue
-		except AttributeError as error:
+		except (KeyError, AttributeError) as error:
 			print(f'No user with email {item["author"]["emailAddress"]}')
 			continue
 		worklog = Worklog(
@@ -75,10 +67,7 @@ def request_worklogs(ids: list) -> list:
 
 def attribute_worklogs(worklogs: list) -> list:
 	attributed_worklogs = []
-	issue_ids = []
-	for worklog in worklogs:
-		issue_ids.append(str(worklog.jira_issue_id))
-
+	issue_ids = [str(worklog.jira_issue_id) for worklog in worklogs]
 	s = requests.session()
 	ids = ','.join(issue_ids)
 	payload = {
@@ -91,11 +80,9 @@ def attribute_worklogs(worklogs: list) -> list:
 	    ]
 	}
 	response = s.post(
-		jira_server_base_url + f'/search', 
-		json=payload, 
-		headers=headers,
-		timeout=6
-		)
+		f'{jira_server_base_url}/search', json=payload, headers=headers, timeout=6
+	)
+
 	response_json = response.json()
 	issues = response_json['issues']
 

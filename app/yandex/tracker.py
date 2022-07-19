@@ -30,7 +30,12 @@ def request_logged_time(email: str, days: int = 62) -> list:
             }
         }
     s = requests.session()
-    response = s.post(yandex_tracker_base_url + f'/worklog/_search?perPage=1000', json=payload, headers=headers)
+    response = s.post(
+        f'{yandex_tracker_base_url}/worklog/_search?perPage=1000',
+        json=payload,
+        headers=headers,
+    )
+
     return response.json()
 
 def request_all_logged_time(period_start: datetime, period_end: datetime, page: int, per_page: int):
@@ -44,7 +49,12 @@ def request_all_logged_time(period_start: datetime, period_end: datetime, page: 
     if period_end:
         payload['createdAt']['to'] = period_end.isoformat()
     s = requests.session()
-    response = s.post(yandex_tracker_base_url + f'/worklog/_search?perPage={per_page}&page={page}', json=payload, headers=headers)
+    response = s.post(
+        f'{yandex_tracker_base_url}/worklog/_search?perPage={per_page}&page={page}',
+        json=payload,
+        headers=headers,
+    )
+
     raw = response.json()
     for item in raw:
         issue = parse_object('issue', item)
@@ -93,7 +103,12 @@ def request_worklogs_count(period_start: datetime, period_end: datetime) -> int:
         payload['createdAt']['to'] = period_end.isoformat()
 
     s = requests.session()
-    response = s.post(yandex_tracker_base_url + f'/worklog/_search?perPage=1&page=1', json=payload, headers=headers)
+    response = s.post(
+        f'{yandex_tracker_base_url}/worklog/_search?perPage=1&page=1',
+        json=payload,
+        headers=headers,
+    )
+
     return int(response.headers['X-Total-Count'])
 
 def get_all_worklogs(period_start: datetime = None, period_end: datetime = None):
@@ -168,20 +183,14 @@ def get_logged_time_period(email: str, period_start, period_end)-> list:
 
         timelog = Timelog(issue_key, comment, author_id, created, start, duration)
         logged.append(timelog)
-        
+
     return logged
 
 def parse_string(name: str, obj):
-    if not name in obj:
-        return ''
-    return obj[name]
+    return '' if name not in obj else obj[name]
 
 def parse_number(name: str, obj):
-    if not name in obj:
-        return None
-    return obj[name]
+    return None if name not in obj else obj[name]
 
 def parse_object(name: str, obj):
-    if not name in obj:
-        return None
-    return obj[name]
+    return None if name not in obj else obj[name]
